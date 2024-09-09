@@ -1,24 +1,38 @@
+import { unstable_cache } from "next/cache";
+import prisma from "@/lib/prisma";
 import { Post } from "@prisma/client";
-import { notFound } from "next/navigation";
-import { PostResponse } from "./types/response";
-import { BASE_URL } from "@/constants/base-url";
+import { getURL } from "@/services/getURL";
+import { fetchWithErrorHandling } from "@/lib/utils";
+
+const fetchPosts = unstable_cache(
+  async () => {
+    return await prisma.post.findMany();
+  },
+  ["posts"],
+  { revalidate: 3600, tags: ["posts"] }
+);
 
 const PostsPage = async () => {
-  const posts: PostResponse<Post> = await fetch(`${BASE_URL}/api/posts`)
-    .then((res) => res.json())
-    .catch();
-
-  // console.log("POSTS: ", posts);
-
-  if (!posts) {
-    notFound();
+  let postsData: Post[];
+  const url = `${getURL()}/api/posts`;
+  if (process.env.NODE_ENV === "production") {
+    // Fetch data directly with Prisma during the build process (SSG/SSR)
+    postsData = await fetchPosts();
+  } else {
+    // During development, use the API route
+    postsData = await fetchWithErrorHandling<Post[]>(url, {
+      cache: "no-cache",
+    });
   }
 
   return (
     <section>
       <div>
-        {posts &&
-          posts.data.map((items) => <li key={items.id}>{items.title}</li>)}
+        <ul>
+          {postsData.map((post) => (
+            <li key={post.id}>{post.title}</li>
+          ))}
+        </ul>
       </div>
     </section>
   );

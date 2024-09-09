@@ -1,21 +1,50 @@
 name: GitHub Actions Vercel Production Deployment
+
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
 on:
   push:
     branches:
-      - main
+      - main # Deploy to production on push to the main branch
+      # You can add more branches if you want to deploy from other branches
+
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      # Step 1: Check out the repository
+      - uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js environment
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18 # Specify your Node.js version
+
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 4: Run Tests
+      - name: Run Tests
+        run: npm run test:ci
+
+      # Step 5: Install Vercel CLI
       - name: Install Vercel CLI
         run: npm install --global vercel@canary
+
+      # Step 6: Pull Vercel Environment
       - name: Pull Vercel Environment Information
         run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Step 7: Build Project
       - name: Build Project Artifacts
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      # Step 8: Deploy to Vercel
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+# //////////////////////
+
