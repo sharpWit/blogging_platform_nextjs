@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
+import type { Route } from "next";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   AtSymbolIcon,
   KeyIcon,
@@ -21,10 +23,12 @@ import {
   FormMessage,
 } from "@/components/ui/forms";
 import { Input } from "@/components/ui/input";
-import { signInSchema, SignInSchemaType } from "../__schemas/schemas";
-import { useToast } from "@/components/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { useState } from "react";
+import { useToast } from "@/components/hooks/use-toast";
+import {
+  signInSchema,
+  SignInSchemaType,
+} from "@/app/(auth)/__components/schemas";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -39,7 +43,7 @@ export default function LoginForm() {
   });
   const [isPending, setIsPending] = useState<boolean>(false);
   // 2. Define a submit handler.
-  const onSubmit: SubmitHandler<SignInSchemaType> = (values) => {
+  const onSubmit = (values: SignInSchemaType) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     handleAuthenticate(values);
@@ -58,16 +62,16 @@ export default function LoginForm() {
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: `Error during login: ${result.error}`,
+          description: `There was a problem in your authorization`,
           action: <ToastAction altText="Try again">Try again</ToastAction>,
         });
       } else {
+        router.push("/posts" as Route);
         toast({
           variant: "success",
           title: "Wellcome!.",
           description: `You're logged in successfully`,
         });
-        router.push("/posts");
       }
     } catch (error) {
       console.error("Login error:", error);
