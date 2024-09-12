@@ -1,6 +1,7 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
 import { inter } from "@/components/ui/fonts";
+import { Toaster } from "@/components/ui/toaster";
 import { NextAuthProvider } from "@/providers/session-provider";
 
 export const metadata: Metadata = {
@@ -16,7 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <NextAuthProvider>{children}</NextAuthProvider>
+        <NextAuthProvider>
+          <main> {children}</main>
+          <Toaster />
+        </NextAuthProvider>
       </body>
     </html>
   );
