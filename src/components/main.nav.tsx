@@ -19,50 +19,54 @@ import { ModeToggle } from "@/components/mode-toggle";
 
 export function MainNav({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "flex flex-col items-start justify-start md:flex-row md:items-center md:justify-between",
-        className
-      )}
-    >
-      <Link href={"/"}>
-        <div className="flex items-center justify-between w-24">
-          <Icons.logo className="h-6 w-6" />
-          <p>Sharpwit</p>
-        </div>
-      </Link>
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Posts</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                {POSTS.map((post) => (
-                  <ListItem
-                    key={post.title}
-                    title={post.title}
-                    href={post.href}
-                  >
-                    {post.description}
-                  </ListItem>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="#" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                About
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-      <div className="flex items-center justify-between w-20">
-        <ModeToggle />
-        <Link href={"/rss" as Route}>
-          <Icons.rss className="h-6 w-6" />
+    <div className={cn("flex flex-col space-y-2", className)}>
+      <div className="flex justify-between items-center flex-1">
+        {/* Logo */}
+        <Link href={"/"}>
+          <div className="flex items-center justify-between w-24">
+            <Icons.logo className="h-6 w-6" />
+            <p>Sharpwit</p>
+          </div>
         </Link>
+
+        {/* Lightness & RSS */}
+        <div className="flex items-center justify-between w-20">
+          <ModeToggle />
+          <Link href={"/rss" as Route}>
+            <Icons.rss className="h-6 w-6" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex-1 self-start">
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Posts</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                  {POSTS.map((post) => (
+                    <ListItem
+                      key={post.title}
+                      title={post.title}
+                      href={post.href}
+                    >
+                      {post.description}
+                    </ListItem>
+                  ))}
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="#" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  About
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
     </div>
   );
