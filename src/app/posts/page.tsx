@@ -32,7 +32,7 @@ const PostsPage = async () => {
   }
 
   return (
-    <section className="min-h-screen px-8 pt-4">
+    <section className="h-screen px-8 pt-4">
       <div className="bg-yellow-100 p-4">
         {postsData.map((post) => (
           <ul

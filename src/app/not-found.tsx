@@ -3,10 +3,12 @@ import type { Route } from "next";
 
 export default function NotFound() {
   return (
-    <div>
-      <h2>Not Found</h2>
-      <p>Could not find requested resource</p>
+    <section className="grid place-content-center h-screen">
+      <h1 className="mb-8 text-2xl font-semibold tracking-tighter">
+        404 - Page Not Found
+      </h1>
+      <p className="mb-4">This page you are looking for does not exist.</p>
       <Link href={"/" as Route}>Return Home</Link>
-    </div>
+    </section>
   );
 }
