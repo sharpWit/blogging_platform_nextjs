@@ -6,6 +6,13 @@ it("renders a heading", async () => {
   await act(async () => {
     render(<HomePage />);
   });
-  const heading = screen.getByRole("heading", { level: 1 });
-  expect(heading).toBeInTheDocument();
+  // Ensure the 'Home' heading is present
+  const homeHeading = screen.getByText("Home", { selector: "h1" });
+  expect(homeHeading).toBeInTheDocument();
+
+  // Ensure the 'TOP CATEGORIES' heading is present
+  const categoriesHeading = screen.getByText("TOP CATEGORIES", {
+    selector: "h1",
+  });
+  expect(categoriesHeading).toBeInTheDocument();
 });
