@@ -83,7 +83,9 @@ export default function LoginForm() {
   return (
     <>
       <Form {...form}>
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>
+        <h1
+          className={`${lusitana.className} mb-3 ml-3 text-2xl font-semibold`}
+        >
           Please log in to continue.
         </h1>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 p-4">
