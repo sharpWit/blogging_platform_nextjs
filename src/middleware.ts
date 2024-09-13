@@ -1,9 +1,10 @@
+import type { Route } from "next";
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // Define paths that should be protected
-const protectedPaths = ["/posts"];
+const protectedPaths = ["/posts" as Route];
 
 export async function middleware(req: NextRequest) {
   // Get the token from the user's cookies
@@ -17,7 +18,7 @@ export async function middleware(req: NextRequest) {
 
   if (isAccessingProtectedPath && !token) {
     // Redirect to login if no token found and trying to access a protected page
-    const loginUrl = new URL("/login", req.url);
+    const loginUrl = new URL("/login" as Route, req.url);
     loginUrl.searchParams.set("callbackUrl", req.url); // Preserve the original path for redirection after login
     return NextResponse.redirect(loginUrl);
   }
