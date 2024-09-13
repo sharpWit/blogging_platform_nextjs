@@ -32,12 +32,12 @@ const PostsPage = async () => {
   }
 
   return (
-    <section className="h-screen px-8 pt-4">
-      <div className="bg-yellow-100 p-4">
+    <section className="h-full px-6 pt-2">
+      <div className="bg-indigo-100 dark:bg-slate-700 p-4">
         {postsData.map((post) => (
           <ul
             key={post.id}
-            className="bg-card max-w-md w-full p-4 border mb-2 shadow-md"
+            className="bg-card max-w-md w-full p-4 border mb-2 shadow-md rounded-md"
           >
             <li className="p-1">
               <h3 className="font-bold text-lg">{post.title}</h3>

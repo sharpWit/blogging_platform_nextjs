@@ -63,7 +63,7 @@ export default function RootLayout({
             <Header>
               <MainNav />
             </Header>
-            <main className="flex-1 pt-32 min-h-screen">{children}</main>
+            <main className="pt-32 min-h-screen w-full">{children}</main>
             <Footer />
             <Toaster />
           </NextAuthProvider>
