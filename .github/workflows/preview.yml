@@ -3,9 +3,16 @@ name: GitHub Actions Vercel Preview Deployment
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+  VERCEL_URL: ${{ secrets.VERCEL_URL  }}
   NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET  }}
   NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL  }}
+  POSTGRES_DATABASE: ${{ secrets.POSTGRES_DATABASE  }}
+  POSTGRES_HOST: ${{ secrets.POSTGRES_HOST  }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD  }}
+  POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL  }}
+  POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING  }}
+  POSTGRES_URL_NO_SSL: ${{ secrets.POSTGRES_URL_NO_SSL  }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER  }}
 
 on:
   push:
