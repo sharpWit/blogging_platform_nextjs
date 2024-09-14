@@ -7,23 +7,42 @@ async function main() {
   const salt = genSaltSync(saltRounds);
   const hashedPassword = hashSync(plainPassword, salt);
 
-  // Create tags
-  const tag1 = await prisma.tag.upsert({
+  // Create categories
+  const category1 = await prisma.category.upsert({
     where: { name: "Technology" },
     update: {},
     create: { name: "Technology" },
   });
 
-  const tag2 = await prisma.tag.upsert({
+  const category2 = await prisma.category.upsert({
     where: { name: "Science" },
     update: {},
     create: { name: "Science" },
   });
 
-  const tag3 = await prisma.tag.upsert({
+  const category3 = await prisma.category.upsert({
     where: { name: "Health" },
     update: {},
     create: { name: "Health" },
+  });
+
+  // Create tags
+  const tag1 = await prisma.tag.upsert({
+    where: { name: "Tech" },
+    update: {},
+    create: { name: "Tech" },
+  });
+
+  const tag2 = await prisma.tag.upsert({
+    where: { name: "Space" },
+    update: {},
+    create: { name: "Space" },
+  });
+
+  const tag3 = await prisma.tag.upsert({
+    where: { name: "Medicine" },
+    update: {},
+    create: { name: "Medicine" },
   });
 
   // Manually add users and posts
@@ -35,14 +54,18 @@ async function main() {
       posts: [
         {
           title: "Tech Innovations in 2024",
+          slug: "tech-innovations-in-2024",
           content: "Exploring the latest tech innovations in the coming year.",
           published: true,
+          categoryId: category1.id,
           tagId: tag1.id,
         },
         {
           title: "The Universe and Beyond",
+          slug: "the-universe-and-beyond",
           content: "A deep dive into space exploration and discoveries.",
           published: true,
+          categoryId: category2.id,
           tagId: tag2.id,
         },
       ],
@@ -54,14 +77,18 @@ async function main() {
       posts: [
         {
           title: "The Future of Medicine",
+          slug: "the-future-of-medicine",
           content: "How technology is changing the healthcare industry.",
           published: false,
+          categoryId: category3.id,
           tagId: tag3.id,
         },
         {
           title: "Artificial Intelligence",
+          slug: "artificial-intelligence",
           content: "Understanding AI and its impact on society.",
           published: true,
+          categoryId: category1.id,
           tagId: tag1.id,
         },
       ],
@@ -73,15 +100,19 @@ async function main() {
       posts: [
         {
           title: "Climate Change and Science",
+          slug: "climate-change-and-science",
           content:
             "Scientific research on climate change and its global impact.",
           published: true,
+          categoryId: category2.id,
           tagId: tag2.id,
         },
         {
           title: "Breakthroughs in Health Science",
+          slug: "breakthroughs-in-health-science",
           content: "Innovations in health and medicine in the past decade.",
           published: false,
+          categoryId: category3.id,
           tagId: tag3.id,
         },
       ],
@@ -98,9 +129,11 @@ async function main() {
         posts: {
           create: userData.posts.map((post) => ({
             title: post.title,
+            slug: post.slug,
             content: post.content,
             published: post.published,
-            tagId: post.tagId,
+            category: { connect: { id: post.categoryId } }, // Updated relation
+            tags: { connect: { id: post.tagId } }, // Updated relation
           })),
         },
       },
