@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Image from "next/image";
 import Link from "next/link";
-// import { cx } from "@/utils/all";
-// import { urlForImage } from "@/lib/sanity/image";
-// import { parseISO, format } from "date-fns";
+import Image from "next/image";
+import { parseISO, format } from "date-fns";
+import { CircleUserRound } from "lucide-react";
 import { PhotoIcon } from "@heroicons/react/24/outline";
-// import CategoryLabel from "@/components/blog/category";
 import { cn } from "@/lib/utils";
 import CategoryLabel from "./category";
+import { IPosts } from "../__types/posts";
 
 interface Props {
-  post: any;
+  post: IPosts;
   aspect?: any;
   minimal?: any;
-  // pathPrefix: any;
   preloadImage?: any;
   fontSize?: any;
   fontWeight?: any;
@@ -22,17 +20,10 @@ export default function PostList({
   post,
   aspect,
   minimal,
-  // pathPrefix,
   preloadImage,
   fontSize,
   fontWeight,
 }: Props) {
-  const imageProps = post?.mainImage;
-  const AuthorimageProps = post?.author?.image;
-  // const imageProps = post?.mainImage ? urlForImage(post.mainImage) : null;
-  // const AuthorimageProps = post?.author?.image
-  //   ? urlForImage(post.author.image)
-  //   : null;
   return (
     <>
       <div
@@ -55,16 +46,12 @@ export default function PostList({
                 ? "aspect-[5/4]"
                 : "aspect-square"
             )}
-            href={`/posts/${post.id}`}
+            href={`/posts/${post.slug}`}
           >
-            {imageProps ? (
+            {post.featuredImage ? (
               <Image
-                src={imageProps.src}
-                {...(post.mainImage.blurDataURL && {
-                  placeholder: "blur",
-                  blurDataURL: post.mainImage.blurDataURL,
-                })}
-                alt={post.mainImage.alt || "Thumbnail"}
+                src={`/images/posts/${post?.featuredImage}`}
+                alt={post.title || "Thumbnail"}
                 priority={preloadImage ? true : false}
                 className="object-cover transition-all"
                 fill
@@ -80,7 +67,7 @@ export default function PostList({
 
         <div className={cn(minimal && "flex items-center")}>
           <div>
-            <CategoryLabel categories={post.categories} nomargin={minimal} />
+            <CategoryLabel categories={post.category} />
             <h2
               className={cn(
                 fontSize === "large"
@@ -94,7 +81,7 @@ export default function PostList({
                 "mt-2    dark:text-white"
               )}
             >
-              <Link href={`/posts/${post.id}`}>
+              <Link href={`/posts/${post.slug}`}>
                 <span
                   className="bg-gradient-to-r from-green-200 to-green-100 bg-[length:0px_10px] bg-left-bottom
       bg-no-repeat
@@ -112,45 +99,38 @@ export default function PostList({
             <div className="hidden">
               {post.excerpt && (
                 <p className="mt-2 line-clamp-3 text-sm text-gray-500 dark:text-gray-400">
-                  <Link href={`/posts`}>{post.excerpt}</Link>
+                  <Link href={`/posts/${post.slug}`}>
+                    {post.excerpt || "Thank you for reading this post."}
+                  </Link>
                 </p>
               )}
             </div>
 
-            <div className="mt-3 flex items-center space-x-3 text-gray-500 dark:text-gray-400">
-              <Link href={`/posts/${post.id}`}>
+            <div className="mt-3 flex items-center space-x-3 text-gray-500 dark:text-muted">
+              {/* Author */}
+              <Link href={`/posts/${post.slug}`}>
                 <div className="flex items-center gap-3">
                   <div className="relative h-5 w-5 flex-shrink-0">
-                    {post?.author?.image && (
-                      <Image
-                        src={AuthorimageProps.src}
-                        alt={post?.author?.name}
-                        className="rounded-full object-cover"
-                        fill
-                        sizes="20px"
-                      />
+                    {((post?.author && post.author.name) || "Saeed") && (
+                      <CircleUserRound />
                     )}
                   </div>
-                  <span className="truncate text-sm">{post?.author?.name}</span>
+                  <span className="truncate text-sm">
+                    {post?.author?.name || "Saeed"}
+                  </span>
                 </div>
               </Link>
+
               <span className="text-xs text-gray-300 dark:text-gray-600">
                 &bull;
               </span>
+
+              {/* DATE */}
               <time
                 className="truncate text-sm"
-                dateTime={post?.publishedAt || post._createdAt}
+                dateTime={post?.createAt.toString()}
               >
-                {/* {format(parseISO(""), "MMMM dd, yyyy")} */}
-                {/* {format(
-                  parseISO(post?.publishedAt || post._createdAt),
-                  "MMMM dd, yyyy"
-                )} */}
-                {/* {format(parseISO(""), "MMMM dd, yyyy")} */}
-                {/* {format(
-                  parseISO(post?.publishedAt || post._createdAt),
-                  "MMMM dd, yyyy"
-                )} */}
+                {format(parseISO(post?.createAt.toString()), "MMMM dd, yyyy")}
               </time>
             </div>
           </div>
