@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/lib/constants";
+import { getURL } from "@/services/getURL";
 import { getPostsHandler } from "./handler";
 
 export async function GET() {
@@ -10,7 +10,7 @@ export async function GET() {
           .map(
             (post) => `<item>
   <title>${post.title}</title>
-  <link>${BASE_URL}/posts/${post.id}</link>
+  <link>${getURL()}/posts/${post.slug}</link>
   <description>${post.content || ""}</description>
   <pubDate>${new Date(post.createAt).toUTCString()}</pubDate>
   </item>`
@@ -22,7 +22,7 @@ export async function GET() {
       <rss version="2.0">
         <channel>
             <title>Coding Jitsu</title>
-            <link>${BASE_URL}</link>
+            <link>${getURL()}</link>
             <description>This is my Technical Blog RSS feed</description>
             ${itemsXml}
         </channel>

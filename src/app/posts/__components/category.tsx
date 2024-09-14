@@ -1,17 +1,19 @@
-import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { ICats } from "../__types/posts";
+import { Label } from "@/components/ui/label";
 
-export default function CategoryLabel({ categories, nomargin = false }) {
+export default function CategoryLabel({
+  categories,
+}: {
+  categories: ICats | null;
+}) {
   return (
     <div className="flex gap-3">
-      {categories?.length &&
-        categories.slice(0).map((category, index) => (
-          <Link href={`/category/${category.slug.current}`} key={index}>
-            <Label nomargin={nomargin} color={category.color}>
-              {category.title}
-            </Label>
-          </Link>
-        ))}
+      <Link href={`/`}>
+        <Label className="underline decoration-pink-500 decoration-wavy cursor-pointer">
+          {categories?.name || "Tech"}
+        </Label>
+      </Link>
     </div>
   );
 }
