@@ -72,3 +72,9 @@ export const fetchWithErrorHandling = async <T>(
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const calculateReadingTime = (content: string): number => {
+  const wordsPerMinute = 200; // Average reading speed
+  const words = content?.split(" ").length;
+  return Math.ceil(words / wordsPerMinute);
+};

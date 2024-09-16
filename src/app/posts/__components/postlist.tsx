@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
 import Image from "next/image";
-import { parseISO, format } from "date-fns";
+import { format } from "date-fns";
 import { CircleUserRound } from "lucide-react";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import { cn } from "@/lib/utils";
@@ -10,33 +9,13 @@ import { IPosts } from "../__types/posts";
 
 interface Props {
   post: IPosts;
-  aspect?: any;
-  minimal?: any;
-  preloadImage?: any;
-  fontSize?: any;
-  fontWeight?: any;
+  aspect?: string;
 }
-export default function PostList({
-  post,
-  aspect,
-  minimal,
-  preloadImage,
-  fontSize,
-  fontWeight,
-}: Props) {
+export default function PostList({ post, aspect }: Props) {
   return (
     <>
-      <div
-        className={cn(
-          "group cursor-pointer",
-          minimal && "grid gap-10 md:grid-cols-2"
-        )}
-      >
-        <div
-          className={cn(
-            " overflow-hidden rounded-md bg-gray-100 transition-all hover:scale-105   dark:bg-gray-800"
-          )}
-        >
+      <div className="group cursor-pointer">
+        <div className="overflow-hidden rounded-md bg-gray-100 transition-all hover:scale-105 dark:bg-gray-800">
           <Link
             className={cn(
               "relative block",
@@ -52,7 +31,7 @@ export default function PostList({
               <Image
                 src={`/images/posts/${post?.featuredImage}`}
                 alt={post.title || "Thumbnail"}
-                priority={preloadImage ? true : false}
+                priority={true}
                 className="object-cover transition-all"
                 fill
                 sizes="(max-width: 768px) 30vw, 33vw"
@@ -65,22 +44,10 @@ export default function PostList({
           </Link>
         </div>
 
-        <div className={cn(minimal && "flex items-center")}>
+        <div>
           <div>
-            <CategoryLabel categories={post.category} />
-            <h2
-              className={cn(
-                fontSize === "large"
-                  ? "text-2xl"
-                  : minimal
-                  ? "text-3xl"
-                  : "text-lg",
-                fontWeight === "normal"
-                  ? "line-clamp-2 font-medium  tracking-normal text-black"
-                  : "font-semibold leading-snug tracking-tight",
-                "mt-2    dark:text-white"
-              )}
-            >
+            <CategoryLabel category={post.category?.name} />
+            <h2 className="text-2xl font-semibold leading-snug tracking-tight mt-2 dark:text-white">
               <Link href={`/posts/${post.slug}`}>
                 <span
                   className="bg-gradient-to-r from-green-200 to-green-100 bg-[length:0px_10px] bg-left-bottom
@@ -128,9 +95,9 @@ export default function PostList({
               {/* DATE */}
               <time
                 className="truncate text-sm"
-                dateTime={post?.createAt.toString()}
+                dateTime={post?.createAt.toLocaleString()}
               >
-                {format(parseISO(post?.createAt.toString()), "MMMM dd, yyyy")}
+                {format(post?.createAt, "MMMM dd, yyyy")}
               </time>
             </div>
           </div>
