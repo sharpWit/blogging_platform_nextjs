@@ -5,7 +5,6 @@ import { IPosts } from "./__types/posts";
 import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
 import PostList from "./__components/postlist";
-import { fetchWithErrorHandling } from "@/lib/utils";
 
 const fetchPosts = unstable_cache(
   async () => {
@@ -52,7 +51,9 @@ const PostsPage = async () => {
     postsData = await fetchPosts();
   } else {
     // During development, use the API route
-    postsData = await fetchWithErrorHandling<IPosts[]>(url);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("There was an error with your request!");
+    postsData = await res.json();
   }
 
   return (

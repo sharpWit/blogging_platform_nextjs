@@ -1,12 +1,12 @@
 import Link from "next/link";
 import type { Route } from "next";
+import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
 import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { IPosts } from "../posts/__types/posts";
-import { fetchWithErrorHandling } from "@/lib/utils";
 import PostList from "../posts/__components/postlist";
 
 const fetchPosts = unstable_cache(
@@ -54,8 +54,12 @@ export default async function HomePage() {
     postsData = await fetchPosts();
   } else {
     // During development, use the API route
-    postsData = await fetchWithErrorHandling<IPosts[]>(url);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("There was an error with your request!");
+    postsData = await res.json();
   }
+
+  if (!postsData) notFound();
 
   return (
     <Container>
