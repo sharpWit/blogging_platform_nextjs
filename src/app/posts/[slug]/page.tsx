@@ -1,72 +1,192 @@
+import Image from "next/image";
 import { NextPage } from "next";
 import prisma from "@/lib/prisma";
-import { parseISO, format } from "date-fns";
+import { format } from "date-fns";
+import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
+import { IPosts } from "../__types/posts";
+import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
 import CategoryLabel from "../__components/category";
+import { calculateReadingTime, fetchWithErrorHandling } from "@/lib/utils";
+
+const fetchPost = unstable_cache(
+  async (slug: string) => {
+    return await prisma.post.findUnique({
+      where: { slug: slug },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        createAt: true,
+        slug: true,
+        featuredImage: true,
+        excerpt: true,
+        views: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  },
+  ["post"],
+  { revalidate: 3600, tags: ["post"] }
+);
+
+export async function generateStaticParams() {
+  const posts = await prisma.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      createAt: true,
+      slug: true,
+      featuredImage: true,
+      excerpt: true,
+      views: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      category: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+      tags: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+
 interface Props {
   params: { slug: string };
 }
-const page: NextPage<Props> = async ({ params }) => {
+
+const PostPage: NextPage<Props> = async ({ params }) => {
   const slug = params.slug ?? "";
-  // console.log("SLUG: ", slug);
 
-  const post = await prisma.post.findUnique({
-    where: { slug: slug },
-  });
+  let postData: IPosts | null;
+  const url = `${getURL()}/api/posts/${slug}`;
+  if (process.env.NODE_ENV === "production") {
+    // Fetch data directly with Prisma during the build process (SSG/SSR)
+    postData = await fetchPost(slug);
+  } else {
+    // During development, use the API route
+    postData = await fetchWithErrorHandling<IPosts>(url);
+  }
 
-  // console.log("POST: ", post);
+  if (!postData) notFound();
+
+  const readingTime = calculateReadingTime(postData.content || "");
 
   return (
     <Container className="!pt-0">
-      <div className="mx-auto max-w-screen-md ">
+      <div className="mx-auto max-w-screen-md">
+        {/* Category Label */}
         <div className="flex justify-center">
-          <CategoryLabel categories={null} />
+          <CategoryLabel category={postData.category?.name} />
         </div>
 
-        <h1 className="text-brand-primary mb-3 mt-2 text-center text-3xl font-semibold tracking-tight dark:text-white lg:text-4xl lg:leading-snug">
-          {post?.title}
+        {/* Post Title */}
+        <h1 className="text-brand-primary mb-3 mt-2 text-center text-4xl font-bold tracking-tight dark:text-white lg:text-5xl">
+          {postData.title}
         </h1>
 
-        <div className="mt-3 flex justify-center space-x-3 text-gray-500 ">
+        {/* Author, Date, and Reading Time */}
+        <div className="mt-3 flex justify-center space-x-3 text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-3">
-            <div className="relative h-10 w-10 flex-shrink-0">
-              {/* {AuthorimageProps && (
-                <Link href={`/author/${post.author.slug.current}`}>
-                  <Image
-                    src={AuthorimageProps.src}
-                    alt={post?.author?.name}
-                    className="rounded-full object-cover"
-                    fill
-                    sizes="40px"
-                  />
-                </Link>
-              )} */}
+            <div className="relative h-12 w-12 flex-shrink-0">
+              <Image
+                src={`/images/posts/${
+                  postData.featuredImage || "default-image.png"
+                }`}
+                alt={postData.author?.name || "Author"}
+                className="rounded-full object-cover"
+                fill
+                sizes="48px"
+              />
             </div>
             <div>
-              <p className="text-gray-800 dark:text-gray-400">
-                Saeed
-                {/* <Link href={`/author/${post.author.slug.current}`}>
-                  {post}
-                </Link> */}
+              <p className="font-semibold text-gray-800 dark:text-gray-300">
+                {postData.author?.name || "Unknown Author"}
               </p>
               <div className="flex items-center space-x-2 text-sm">
                 <time
                   className="text-gray-500 dark:text-gray-400"
-                  dateTime={post?.createAt?.toString()}
+                  dateTime={postData.createAt.toLocaleString()}
                 >
-                  {format(parseISO("2024-09-14T20:27:14"), "MMMM dd, yyyy")}
+                  {format(postData?.createAt, "MMMM dd, yyyy")}
                 </time>
-                <span>· {"5"} min read</span>
+                <span>· {readingTime} min read</span>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="mx-auto max-w-screen-xl pt-8">
-        <p className="text-lg"> {post?.content}</p>
+
+        {/* Featured Image */}
+        <div className="mt-6">
+          {postData.featuredImage && (
+            <Image
+              src={`/images/posts/${postData.featuredImage}`}
+              alt={postData.title}
+              className="rounded-lg object-cover"
+              width={1200}
+              height={675}
+              priority
+            />
+          )}
+        </div>
+
+        {/* Post Content */}
+        <div className="mx-auto max-w-screen-xl pt-8">
+          <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+            {postData.content}
+          </p>
+        </div>
+
+        {/* Tags */}
+        <div className="mt-8 flex flex-wrap gap-2">
+          {postData.tags && (
+            <div className="flex gap-2">
+              <p className="text-gray-500 dark:text-gray-400">Tags:</p>
+              <ul className="flex flex-wrap gap-2">
+                <li className="bg-gray-200 dark:bg-gray-800 px-3 py-1 rounded-full text-sm">
+                  {postData.tags.name}
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
     </Container>
   );
 };
 
-export default page;
+export default PostPage;

@@ -52,11 +52,8 @@ const PostsPage = async () => {
     postsData = await fetchPosts();
   } else {
     // During development, use the API route
-    postsData = await fetchWithErrorHandling<IPosts[]>(url, {
-      cache: "no-cache",
-    });
+    postsData = await fetchWithErrorHandling<IPosts[]>(url);
   }
-  // console.log("POSTS: ", postsData);
 
   return (
     <>
@@ -74,7 +71,6 @@ const PostsPage = async () => {
                     tags: post.tags,
                   }}
                   aspect="landscape"
-                  preloadImage={true}
                 />
               ))}
           </div>
