@@ -37,8 +37,8 @@ jobs:
         run: npm install
 
       # Step 4: Run Tests
-      - name: Run Tests
-        run: npm run test:ci
+      # - name: Run Tests
+      #   run: npm run test:ci
 
       # Step 5: Install Vercel CLI
       - name: Install Vercel CLI

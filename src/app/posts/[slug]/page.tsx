@@ -8,7 +8,7 @@ import { IPosts } from "../__types/posts";
 import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
 import CategoryLabel from "../__components/category";
-import { calculateReadingTime, fetchWithErrorHandling } from "@/lib/utils";
+import { calculateReadingTime } from "@/lib/utils";
 
 const fetchPost = unstable_cache(
   async (slug: string) => {
@@ -99,7 +99,9 @@ const PostPage: NextPage<Props> = async ({ params }) => {
     postData = await fetchPost(slug);
   } else {
     // During development, use the API route
-    postData = await fetchWithErrorHandling<IPosts>(url);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("There was an error with your request!");
+    postData = await res.json();
   }
 
   if (!postData) notFound();
