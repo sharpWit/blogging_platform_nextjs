@@ -1,15 +1,84 @@
 import Link from "next/link";
 import type { Route } from "next";
+import { unstable_cache } from "next/cache";
+import prisma from "@/lib/prisma";
+import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
 import { Button } from "@/components/ui/button";
+import { IPosts } from "../posts/__types/posts";
+import { fetchWithErrorHandling } from "@/lib/utils";
+import PostList from "../posts/__components/postlist";
 
-export default function HomePage() {
+const fetchPosts = unstable_cache(
+  async () => {
+    return await prisma.post.findMany({
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        createAt: true,
+        slug: true,
+        featuredImage: true,
+        excerpt: true,
+        views: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  },
+  ["posts"],
+  { revalidate: 3600, tags: ["posts"] }
+);
+
+export default async function HomePage() {
+  let postsData: IPosts[];
+  const url = `${getURL()}/api/posts`;
+  if (process.env.NODE_ENV === "production") {
+    // Fetch data directly with Prisma during the build process (SSG/SSR)
+    postsData = await fetchPosts();
+  } else {
+    // During development, use the API route
+    postsData = await fetchWithErrorHandling<IPosts[]>(url);
+  }
+
   return (
     <Container>
-      <main className="flex flex-col items-start justify-evenly mt-16 md:flex-row">
+      <main className="flex flex-col items-start justify-evenly mt-4 md:flex-row">
         <div>
-          <h1>Home</h1>
-          <p>Contents</p>
+          <h1 className="p-2 mb-2 font-bold text-xl">Home</h1>
+          <div>
+            <div className="flex flex-col space-y-4 ">
+              {postsData &&
+                postsData.map((post) => (
+                  <PostList
+                    key={post.id}
+                    post={{
+                      ...post,
+                      author: post.author,
+                      category: post.category,
+                      tags: post.tags,
+                    }}
+                    aspect="landscape"
+                  />
+                ))}
+            </div>
+          </div>
         </div>
         <div className="h-screen">
           <div>
