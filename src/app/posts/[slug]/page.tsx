@@ -117,12 +117,12 @@ const PostPage: NextPage<Props> = async ({ params }) => {
         </div>
 
         {/* Post Title */}
-        <h1 className="text-brand-primary mb-3 mt-2 text-center text-4xl font-bold tracking-tight dark:text-white lg:text-5xl">
+        <h1 className="text-brand-primary mb-3 mt-2 text-center text-4xl font-bold tracking-tight lg:text-5xl">
           {postData.title}
         </h1>
 
         {/* Author, Date, and Reading Time */}
-        <div className="mt-3 flex justify-center space-x-3 text-gray-500 dark:text-gray-400">
+        <div className="mt-3 flex justify-center space-x-3 text-muted-foreground">
           <div className="flex items-center gap-3">
             <div className="relative h-12 w-12 flex-shrink-0">
               <Image
@@ -136,12 +136,12 @@ const PostPage: NextPage<Props> = async ({ params }) => {
               />
             </div>
             <div>
-              <p className="font-semibold text-gray-800 dark:text-gray-300">
+              <p className="font-semibold text-muted-foreground">
                 {postData.author?.name || "Unknown Author"}
               </p>
               <div className="flex items-center space-x-2 text-sm">
                 <time
-                  className="text-gray-500 dark:text-gray-400"
+                  className="text-muted-foreground"
                   dateTime={postData.createAt.toLocaleString()}
                 >
                   {format(postData?.createAt, "MMMM dd, yyyy")}
@@ -168,7 +168,7 @@ const PostPage: NextPage<Props> = async ({ params }) => {
 
         {/* Post Content */}
         <div className="mx-auto max-w-screen-xl pt-8">
-          <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+          <p className="text-lg leading-relaxed text-muted-foreground">
             {postData.content}
           </p>
         </div>
@@ -177,9 +177,9 @@ const PostPage: NextPage<Props> = async ({ params }) => {
         <div className="mt-8 flex flex-wrap gap-2">
           {postData.tags && (
             <div className="flex gap-2">
-              <p className="text-gray-500 dark:text-gray-400">Tags:</p>
+              <p className="text-muted-foreground ">Tags:</p>
               <ul className="flex flex-wrap gap-2">
-                <li className="bg-gray-200 dark:bg-gray-800 px-3 py-1 rounded-full text-sm">
+                <li className="bg-muted-foreground text-muted px-3 py-1 rounded-full text-sm">
                   {postData.tags.name}
                 </li>
               </ul>
