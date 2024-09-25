@@ -86,10 +86,10 @@ export default async function HomePage() {
         </div>
         <div className="h-screen">
           <div>
-            <h1 className="font-bold mb-4">TOP CATEGORIES</h1>
+            <h1 className="font-bold mt-4 mb-4">TOP CATEGORIES</h1>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
               <Button
-                variant={"secondary"}
+                variant="secondary"
                 className="hover:scale-110 transition-all"
                 asChild
               >

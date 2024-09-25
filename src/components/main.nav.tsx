@@ -20,12 +20,13 @@ import { ModeToggle } from "@/components/mode-toggle";
 export function MainNav({ className }: { className?: string }) {
   return (
     <div className={cn("flex flex-col space-y-2", className)}>
+      {/* Top row */}
       <div className="flex justify-between items-center flex-1">
         {/* Logo */}
-        <Link href={"/"}>
-          <div className="flex items-center justify-between w-24">
+        <Link href={"/" as Route}>
+          <div className="flex items-center justify-between w-[108px] text-primary-foreground">
             <Icons.logo className="h-6 w-6" />
-            <p>Sharpwit</p>
+            <h1 className="text-lg font-semibold">Sharpwit</h1>
           </div>
         </Link>
 
@@ -33,7 +34,7 @@ export function MainNav({ className }: { className?: string }) {
         <div className="flex items-center justify-between w-20">
           <ModeToggle />
           <Link href={"/rss" as Route}>
-            <Icons.rss className="h-6 w-6" />
+            <Icons.rss className="h-6 w-6 text-primary-foreground" />
           </Link>
         </div>
       </div>
@@ -43,9 +44,9 @@ export function MainNav({ className }: { className?: string }) {
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuTrigger>Posts</NavigationMenuTrigger>
+              <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
               <NavigationMenuContent>
-                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                <ul className="grid w-[300px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                   {POSTS.map((post) => (
                     <ListItem
                       key={post.title}
@@ -58,8 +59,9 @@ export function MainNav({ className }: { className?: string }) {
                 </ul>
               </NavigationMenuContent>
             </NavigationMenuItem>
+
             <NavigationMenuItem>
-              <Link href="#" legacyBehavior passHref>
+              <Link href={"/about" as Route} legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                   About
                 </NavigationMenuLink>
