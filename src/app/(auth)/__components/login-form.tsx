@@ -84,7 +84,7 @@ export default function LoginForm() {
     <>
       <Form {...form}>
         <h1
-          className={`${lusitana.className} mb-3 ml-3 text-2xl font-semibold`}
+          className={`${lusitana.className} mb-3 ml-3 text-xl font-semibold text-muted-foreground`}
         >
           Please log in to continue.
         </h1>
