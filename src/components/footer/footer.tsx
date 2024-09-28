@@ -2,26 +2,59 @@
 
 import Link from "next/link";
 import type { Route } from "next";
-import { useFormState } from "react-dom";
-import { Icons } from "./icons";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Icons } from "../icons";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { POSTS } from "@/lib/constants";
+import { useToast } from "../hooks/use-toast";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../ui/forms";
+import { ToastAction } from "../ui/toast";
+import { createSubscriber } from "@/lib/formPostAction";
+import { subscribeSchema, SubscribeSchemaType } from "./subscribeSchema";
 
 export default function Footer() {
-  const initialState = null;
-  // const initialState = { message: "", errors: {} };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const createSubscriber = (subscriber: any) =>
-    console.log("subscriber: ", subscriber);
+  const { toast } = useToast();
 
-  const [state, dispatch] = useFormState(createSubscriber, initialState);
-  console.log("state: ", state);
+  const form = useForm<SubscribeSchemaType>({
+    resolver: zodResolver(subscribeSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = (values: SubscribeSchemaType) => {
+    console.log("values: ", values);
+    if (values && values.email.length > 0) {
+      createSubscriber(values);
+      toast({
+        variant: "success",
+        title: "Congratulation",
+        description: "You're subscribed successfully",
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: `There was a problem in your subscription`,
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      });
+    }
+    return form.reset();
+  };
 
   return (
-    <footer className="bg-gray-100 py-8 dark:bg-gray-800 mt-10">
+    <footer className="bg-muted py-8 mt-10">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <Icons.logo className="h-6 w-6" />
@@ -101,44 +134,43 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+
+          {/* SUBSCRIPTION */}
           <div className="space-y-4">
             <h3 className="text-md font-semibold">Newsletter</h3>
             <p className="text-gray-500 dark:text-gray-400 text-sm">
               Subscribe to our newsletter to stay up-to-date with the latest
               news and updates.
             </p>
-            <form action={dispatch}>
-              <div className="flex space-x-2">
-                <Input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder="Enter your email"
-                  className="flex-1"
-                  defaultValue=""
-                  aria-describedby="email-error"
-                />
-                <Button>Subscribe</Button>
-              </div>
-              <div
-                id="email-error"
-                aria-label="polite"
-                aria-atomic="true"
-                className="px-1"
-              >
-                {/* {state?.errors?.email &&
-                  state.errors.email.map((error: string) => (
-                    <p key={error} className="text-xs text-red-500">
-                      {error}
-                    </p>
-                  ))}
-                {!state?.errors?.email && (
-                  <p className="text-xs text-green-500">{state?.message}</p>
-                )} */}
-              </div>
-            </form>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="flex space-x-2">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Enter your email"
+                            className="flex-1"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>This is your email.</FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  ></FormField>
+
+                  <Button type="submit">Subscribe</Button>
+                </div>
+              </form>
+            </Form>
           </div>
         </div>
+
+        {/* COPY RIGHT */}
         <div className="mt-8 border-t border-gray-200 pt-4 text-center text-xs text-gray-500 dark:border-gray-700 dark:text-gray-400">
           &copy; 2024 Sharpwit. All rights reserved.
         </div>
