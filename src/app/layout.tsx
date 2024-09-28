@@ -1,10 +1,10 @@
 import "../styles/globals.css";
 import type { Metadata } from "next";
 import Header from "@/components/header";
-import Footer from "@/components/footer";
 import { siteConfig } from "@/config/site";
 import { inter } from "@/components/ui/fonts";
 import { MainNav } from "@/components/main.nav";
+import Footer from "@/components/footer/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { NextAuthProvider } from "@/providers/session-provider";
