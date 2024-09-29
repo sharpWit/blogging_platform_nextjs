@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Header from "@/components/header";
 import { siteConfig } from "@/config/site";
 import { inter } from "@/components/ui/fonts";
-import { MainNav } from "@/components/main.nav";
+import { MainNav } from "@/components/main-nav";
 import Footer from "@/components/footer/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/providers/theme-provider";

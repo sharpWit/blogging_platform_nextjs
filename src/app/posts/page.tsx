@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { IPosts } from "./__types/posts";
 import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
-import PostList from "./__components/postlist";
+import PostList from "./__components/post-list";
 
 const fetchPosts = unstable_cache(
   async () => {
