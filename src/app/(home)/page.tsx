@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { Route } from "next";
+import dynamic from "next/dynamic";
 import { notFound } from "next/navigation";
 import { unstable_cache } from "next/cache";
 import prisma from "@/lib/prisma";
+import Loading from "@/app/loading";
 import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { IPosts } from "../posts/__types/posts";
 import PostList from "../posts/__components/post-list";
-import AccordionPosts from "./__components/accordion-posts";
 
 const fetchPosts = unstable_cache(
   async () => {
@@ -47,6 +48,13 @@ const fetchPosts = unstable_cache(
   { revalidate: 3600, tags: ["posts"] }
 );
 
+const AccordionRandomPosts = dynamic(
+  () => import("./__components/accordion-posts"),
+  {
+    loading: () => <Loading />,
+  }
+);
+
 export default async function HomePage() {
   let postsData: IPosts[];
   const url = `${getURL()}/api/posts`;
@@ -71,7 +79,7 @@ export default async function HomePage() {
           </h1>
 
           {/* TOP POSTS */}
-          <AccordionPosts posts={postsData} />
+          <AccordionRandomPosts posts={postsData} />
           <div>
             {/* POST LISTS */}
             <div>
