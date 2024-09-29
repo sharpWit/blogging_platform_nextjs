@@ -7,7 +7,8 @@ import { getURL } from "@/services/getURL";
 import Container from "@/components/container";
 import { Button } from "@/components/ui/button";
 import { IPosts } from "../posts/__types/posts";
-import PostList from "../posts/__components/postlist";
+import PostList from "../posts/__components/post-list";
+import AccordionPosts from "./__components/accordion-posts";
 
 const fetchPosts = unstable_cache(
   async () => {
@@ -63,34 +64,44 @@ export default async function HomePage() {
 
   return (
     <Container>
-      <main className="flex flex-col items-start justify-evenly mt-4 md:flex-row">
-        <div>
-          <h1 className="p-2 mb-2 font-bold text-xl">Home</h1>
+      <main className="flex flex-col items-start justify-evenly mt-4 md:flex-row md:justify-between md:gap-8">
+        <div className="flex flex-col space-y-12 overflow-hidden">
+          <h1 className="py-2 bg-gradient-to-r from-blue-500 via-teal-500 to-pink-500 bg-clip-text text-3xl md:text-4xl lg:text-5xl font-extrabold text-transparent text-center select-auto leading-tight">
+            Welcome to Sharpwit tech blog
+          </h1>
+
+          {/* TOP POSTS */}
+          <AccordionPosts posts={postsData} />
           <div>
-            <div className="flex flex-col space-y-4 ">
-              {postsData &&
-                postsData.map((post) => (
-                  <PostList
-                    key={post.id}
-                    post={{
-                      ...post,
-                      author: post.author,
-                      category: post.category,
-                      tags: post.tags,
-                    }}
-                    aspect="landscape"
-                  />
-                ))}
+            {/* POST LISTS */}
+            <div>
+              <div className="flex flex-col space-y-6">
+                {postsData &&
+                  postsData.map((post) => (
+                    <PostList
+                      key={post.id}
+                      post={{
+                        ...post,
+                        author: post.author,
+                        category: post.category,
+                        tags: post.tags,
+                      }}
+                      aspect="landscape"
+                    />
+                  ))}
+              </div>
             </div>
           </div>
         </div>
-        <div className="h-screen">
+
+        {/* CATEGORIES */}
+        <div className="h-screen ">
           <div>
             <h1 className="font-bold mt-4 mb-4">TOP CATEGORIES</h1>
             <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2">
               <Button
                 variant="secondary"
-                className="hover:scale-110 transition-all"
+                className="hover:scale-110 transition-all shadow-md"
                 asChild
               >
                 <Link href={"/posts" as Route}>Posts</Link>
