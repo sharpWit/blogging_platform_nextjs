@@ -12,8 +12,6 @@ interface Props {
 const AccordionPosts: FC<Props> = ({ posts }) => {
   const [randomPosts, setRandomPosts] = useState<IPosts[]>([]);
 
-  console.log("PROPS: ", posts);
-
   const shuffleArray = (array: IPosts[]) => {
     return array
       .map((item) => ({ ...item, sort: Math.random() })) // add a random key
