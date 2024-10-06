@@ -29,9 +29,11 @@ export function MainNav({ className }: { className?: string }) {
       <div className="flex justify-between items-center flex-1">
         {/* Logo */}
         <Link href={"/" as Route}>
-          <div className="flex items-center justify-between w-[108px] text-primary-foreground">
+          <div className="flex items-center justify-between w-[108px] text-[#173254] dark:text-[#eff4ff]">
             <Icons.logo className="h-6 w-6" />
-            <h1 className="text-lg font-semibold drop-shadow-md">Sharpwit</h1>
+            <h1 className="text-[#173254] dark:text-[#eff4ff] text-lg font-semibold">
+              Sharpwit
+            </h1>
           </div>
         </Link>
 
