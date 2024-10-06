@@ -6,7 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/lib/prisma";
 import { User } from "@prisma/client";
 
-// Create the schema to validate sign-in credentials
+// validate sign-in credentials
 export const signInSchema = z.object({
   email: z
     .string()
@@ -22,19 +22,18 @@ export const signInSchema = z.object({
     }),
 });
 
-async function getUser(email: string): Promise<User> {
+async function getUserByEmail(email: string): Promise<User | null> {
   try {
     const user = await prisma.user.findUnique({
       where: { email },
     });
-    if (!user) {
-      console.error("User does not exist!");
-      throw new Error("User does not exist!");
-    }
     return user;
   } catch (error) {
-    console.error("Failed to fetch user:", error);
-    throw new Error("Failed to fetch user.");
+    console.error(
+      "Error fetching user:",
+      error instanceof Error ? error.message : error
+    );
+    throw new Error("Failed to retrieve user.");
   }
 }
 
@@ -42,6 +41,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: "/login" as Route,
   },
@@ -61,7 +61,9 @@ export const authOptions: NextAuthOptions = {
           console.error("No credentials provided!"); // Log missing credentials
           return null;
         }
+
         const { success, data, error } = signInSchema.safeParse(credentials);
+
         if (!success) {
           console.error("Validation failed:", error.errors); // Log validation errors
           return null;
@@ -69,49 +71,46 @@ export const authOptions: NextAuthOptions = {
 
         const { email, password } = data;
 
-        const user = await getUser(email);
-        if (!user) {
-          return null;
-        }
-
         try {
+          const user = await getUserByEmail(email);
+          if (!user) {
+            console.error("User not found.");
+            return null;
+          }
+
           const passwordsMatch = await compare(password, user.password);
           if (passwordsMatch) {
             return user;
           } else {
-            console.error("Passwords do not match."); // Log password mismatch
+            console.error("Invalid password");
+            return null;
           }
         } catch (error) {
-          console.error("Error comparing passwords:", error); // Log comparison error
+          console.error(
+            "Authorization error:",
+            error instanceof Error ? error.message : error
+          );
+          return null;
         }
-
-        return null;
       },
     }),
   ],
   callbacks: {
-    session: ({ session, token }) => {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          randomKey: token.randomKey,
-        },
-      };
-    },
     jwt: ({ token, user }) => {
       if (user) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const u = user as unknown as any;
-
-        return {
-          ...token,
-          id: u.id,
-          randomKey: u.randomKey,
-        };
+        const { id } = user as User;
+        token.id = id;
       }
       return token;
+    },
+    session: ({ session, token }) => {
+      if (token.id) {
+        session.user = {
+          ...(session.user || {}),
+          id: token.id as string,
+        };
+      }
+      return session;
     },
   },
 };
